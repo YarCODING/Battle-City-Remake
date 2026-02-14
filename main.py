@@ -27,41 +27,36 @@ play_button_rect = pygame.Rect(250, 200, 200, 60)
 close_button_rect = pygame.Rect(250, 300, 200, 60)
 
 
+import math
+
 class Player:
     def __init__(self, x, y, w, h, image, speed):
-        self.rect = pygame.Rect(x, y, w, h)
         self.original_image = pygame.transform.scale(image, (w, h))
         self.image = self.original_image
+        self.rect = self.image.get_rect(center=(x, y))
+
         self.speed = speed
+        self.angle = 0
 
     def draw(self):
-        window.blit(self.image, (self.rect.x, self.rect.y))
+        window.blit(self.image, self.rect)
 
     def move(self):
         keys = pygame.key.get_pressed()
-
-        moving = False
-
-        if keys[pygame.K_w]:
-            self.rect.y -= self.speed
-            self.image = pygame.transform.rotate(self.original_image, -360)
-            moving = True
-
-        if keys[pygame.K_s]:
-            self.rect.y += self.speed
-            self.image = pygame.transform.rotate(self.original_image, 180)
-            moving = True
-
         if keys[pygame.K_a]:
-            self.rect.x -= self.speed
-            self.image = pygame.transform.rotate(self.original_image, 90)
-            moving = True
-
+            self.angle += 3
         if keys[pygame.K_d]:
-            self.rect.x += self.speed
-            self.image = self.original_image
-            self.image = pygame.transform.rotate(self.original_image, -90)
-            moving = True
+            self.angle -= 3
+        if keys[pygame.K_s]:
+            self.rect.x += self.speed * math.cos(math.radians(self.angle - 90))
+            self.rect.y -= self.speed * math.sin(math.radians(self.angle - 90))
+        if keys[pygame.K_w]:
+            self.rect.x -= self.speed * math.cos(math.radians(self.angle - 90))
+            self.rect.y += self.speed * math.sin(math.radians(self.angle - 90))
+        center = self.rect.center
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=center)
+
 
 
 
@@ -109,3 +104,4 @@ while game:
                 game = False
 
 pygame.quit()
+
