@@ -10,7 +10,7 @@ in_title_screen = True
 while game:
     if in_title_screen:
         SCREEN.blit(background, (0, 0))
-        SCREEN.blit(title_font.render("Battle_City_Remake", True, (0, 0, 0)), (300, 130))
+        SCREEN.blit(title_font.render("Battle_City_Remake", True, (0, 0, 0)), (240, 130))
 
         p.draw.rect(SCREEN, (0, 255, 0), play_button_rect)
         p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
@@ -51,6 +51,8 @@ while game:
             if event.type == p.QUIT:
                 game = False
             if event.type == p.KEYDOWN:
+                if event.key == p.K_ESCAPE:
+                    in_title_screen = True
                 if event.key == p.K_SPACE:
                     px, py = player.rect.center
                     rad = math.radians(player.angle - 90)
