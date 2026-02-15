@@ -4,7 +4,9 @@ class PLAYER(BEHAVIORS):
     def __init__(self):
         self.size = (64, 64)
         self.color = RED 
-        
+        self.index = 0
+        self.last_change = p.time.get_ticks()
+        self.moving = False
         raw_images = image_load(os.path.dirname(__file__))
         self.original_image = p.transform.scale(raw_images[0], self.size)
         self.image = self.original_image
@@ -19,7 +21,7 @@ class PLAYER(BEHAVIORS):
 
     def move(self):
         keys = p.key.get_pressed()
-        
+        self.moving = False
         if keys[p.K_a]:
             self.angle += 3
         if keys[p.K_d]:
@@ -28,9 +30,11 @@ class PLAYER(BEHAVIORS):
         # 2. Движение
         rad = math.radians(self.angle - 90)
         if keys[p.K_s]:
+            self.moving = True
             self.pos_x += self.speed * math.cos(rad)
             self.pos_y -= self.speed * math.sin(rad)
         if keys[p.K_w]:
+            self.moving = True
             self.pos_x -= self.speed * math.cos(rad)
             self.pos_y += self.speed * math.sin(rad)
             
