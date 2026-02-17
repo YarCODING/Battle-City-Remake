@@ -1,11 +1,19 @@
 from imports import*
 from module.texts import*
 
-
-bullets = []
-
 game = True
 in_title_screen = True
+
+maps_obj = create_lvl(0)
+solids_obj = []
+LVL = 1
+
+def start_lvl():
+    for wall in maps_obj:
+        if wall.index == 1:
+            wall.draw_img()
+            solids_obj.append(wall)
+start_lvl()
 
 while game:
     if in_title_screen:
@@ -20,7 +28,6 @@ while game:
 
         p.display.update()
         
-
 
 
         for event in p.event.get():
@@ -38,14 +45,36 @@ while game:
     else:
         SCREEN.blit(background, (0, 0))
 
-        player.move()
+        for wall in maps_obj:
+            if wall.index != 1:
+                wall.draw_img()
+
+        if player.rect.right < 0 or player.rect.left > SCREENSIZE[0] or \
+            player.rect.bottom < 0 or player.rect.top > SCREENSIZE[1]:
+                
+                player.pos_x = 64.0
+                player.pos_y = 64.0
+                player.angle = 0
+                logging.debug("Player respawned")
+                
+                player.rect.center = (player.pos_x, player.pos_y)
+
+        player.move(maps_obj)
         player.draw_img()
 
         for b in bullets[:]:
             b.move()
-            b.draw_rect()
+            b.draw_img()
             if b.rect.right < 0 or b.rect.left > SCREENSIZE[0] or b.rect.bottom < 0 or b.rect.top > SCREENSIZE[1]:
                 bullets.remove(b)
+                logging.debug("Bullet - deleted (screen)")
+            
+            for wall in maps_obj:
+                if b.rect.colliderect(wall.rect):
+                    bullets.remove(b)
+                    logging.debug("Bullet - deleted (wall)")
+                    break
+        
 
         p.display.update()
         clock.tick(FPS)
@@ -65,6 +94,7 @@ while game:
                     spawn_x = px + dx * offset
                     spawn_y = py + dy * offset
                     bullets.append(BULLET(spawn_x, spawn_y, (dx, dy)))
+                    logging.debug("Bullet - spawned")
         now = p.time.get_ticks()
         if player.moving == True:
             if now - player.last_change > 200:

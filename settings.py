@@ -4,7 +4,15 @@ from random import*
 import os
 import math
 
-SCREENSIZE = (700, 500)
+import logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="{asctime} - {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+SCREENSIZE = (704, 512)
 SCREEN = p.display.set_mode(SCREENSIZE)
 p.display.set_caption("Battle_City_Remake")
 
@@ -16,7 +24,7 @@ FPS = 60
 # p.mixer.music.set_volume(1)
 # p.mixer.music.play(-1)
 
-background = p.image.load("img/bg.jpg")
+background = p.image.load("img/bg.jpeg")
 background = p.transform.scale(background, SCREENSIZE)
 
 p.font.init()

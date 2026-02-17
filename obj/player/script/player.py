@@ -19,27 +19,41 @@ class PLAYER(BEHAVIORS):
         self.speed = 3
         self.angle = 0
 
-    def move(self):
+    def move(self, walls):
         keys = p.key.get_pressed()
-        self.moving = False
-        if keys[p.K_a]:
-            self.angle += 3
-        if keys[p.K_d]:
-            self.angle -= 3
-            
-        # 2. Движение
-        rad = math.radians(self.angle - 90)
-        if keys[p.K_s]:
-            self.moving = True
-            self.pos_x += self.speed * math.cos(rad)
-            self.pos_y -= self.speed * math.sin(rad)
-        if keys[p.K_w]:
-            self.moving = True
-            self.pos_x -= self.speed * math.cos(rad)
-            self.pos_y += self.speed * math.sin(rad)
-            
-        self.image = p.transform.rotate(self.original_image, self.angle)
+        old_x, old_y = self.pos_x, self.pos_y
         
-        self.rect = self.image.get_rect(center=(self.pos_x, self.pos_y))
+        if keys[p.K_a]: self.angle += 3
+        if keys[p.K_d]: self.angle -= 3
+        
+        rad = math.radians(self.angle - 90)
+        dist_x = 0
+        dist_y = 0
+        
+        if keys[p.K_s]:
+            dist_x = self.speed * math.cos(rad)
+            dist_y = -self.speed * math.sin(rad)
+        if keys[p.K_w]:
+            dist_x = -self.speed * math.cos(rad)
+            dist_y = self.speed * math.sin(rad)
+
+        collision_rect = p.Rect(0, 0, 30, 30) 
+
+        self.pos_x += dist_x
+        collision_rect.center = (int(self.pos_x), int(self.pos_y))
+        for wall in walls:
+            if collision_rect.colliderect(wall.rect):
+                self.pos_x = old_x
+                break
+
+        self.pos_y += dist_y
+        collision_rect.center = (int(self.pos_x), int(self.pos_y))
+        for wall in walls:
+            if collision_rect.colliderect(wall.rect):
+                self.pos_y = old_y
+                break
+
+        self.image = p.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
 
 player = PLAYER()
