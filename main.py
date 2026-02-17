@@ -95,32 +95,17 @@ while game:
                     spawn_y = py + dy * offset
                     bullets.append(BULLET(spawn_x, spawn_y, (dx, dy)))
                     logging.debug("Bullet - spawned")
+
+
         now = p.time.get_ticks()
-        if player.moving == True:
-            if now - player.last_change > 200:
+        if player.moving:
+            if now - player.last_change > 300:
                 player.last_change = now
-                player.index += 1
-                if player.index == 1:
-                    player.original_image = p.transform.scale(
-                        p.image.load("obj/player/img/tank2.png"),
-                        player.size
-                    )
-                elif player.index == 2:
-                    player.original_image = p.transform.scale(
-                        p.image.load("obj/player/img/tank3.png"),
-                        player.size
-                    )
-                elif player.index == 3:
-                    player.original_image = p.transform.scale(
-                        p.image.load("obj/player/img/tank4.png"),
-                        player.size
-                    )
-                elif player.index == 4:
-                    player.original_image = p.transform.scale(
-                        p.image.load("obj/player/img/tank1.png"),
-                        player.size
-                    )
-                    player.index = 0
+                player.index = (player.index + 1) % len(player.frames)
+                
+                player.original_image = player.frames[player.index]
+                logging.debug('image changed')
+                player.image = p.transform.rotate(player.original_image, player.angle)
 
 
 p.quit()

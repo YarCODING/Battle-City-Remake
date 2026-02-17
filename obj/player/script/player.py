@@ -9,7 +9,11 @@ class PLAYER(BEHAVIORS):
         self.moving = False
         raw_images = image_load(os.path.dirname(__file__))
         self.original_image = p.transform.scale(raw_images[0], self.size)
+        self.last_change = p.time.get_ticks()
         self.image = self.original_image
+        self.frames = []
+        for img in raw_images:
+            self.frames.append(p.transform.scale(img, self.size))
         
         self.rect = self.image.get_rect(topleft=(64, 64))
         
@@ -22,6 +26,7 @@ class PLAYER(BEHAVIORS):
     def move(self, walls):
         keys = p.key.get_pressed()
         old_x, old_y = self.pos_x, self.pos_y
+        old_angle = self.angle
         
         if keys[p.K_a]: self.angle += 3
         if keys[p.K_d]: self.angle -= 3
@@ -52,6 +57,11 @@ class PLAYER(BEHAVIORS):
             if collision_rect.colliderect(wall.rect):
                 self.pos_y = old_y
                 break
+
+        if self.pos_x != old_x or self.pos_y != old_y or self.angle != old_angle:
+            self.moving = True
+        else:
+            self.moving = False
 
         self.image = p.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
