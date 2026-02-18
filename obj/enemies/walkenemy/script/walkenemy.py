@@ -1,5 +1,6 @@
 from obj.enemy.script.enemy import*
 from obj.bullet.script.bullet import*
+from obj.bullet.script.bullet_enemy import*
 
 class WALK_ENEMY(ENEMY):
     def __init__(self, x, y, frames, speed, y2):
@@ -40,7 +41,7 @@ class WALK_ENEMY(ENEMY):
         self.image = self.frames[self.index]
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
     
-    def attack(self, bullets_list):
+    def attack(self, enemy_bullets):
         now = p.time.get_ticks()
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
@@ -55,8 +56,8 @@ class WALK_ENEMY(ENEMY):
             spawn_x = px + dx * offset
             spawn_y = py + dy * offset
             
-            new_bullet = BULLET(spawn_x, spawn_y, (dx, dy))
-            bullets_list.append(new_bullet)
+            new_enemy_bullet = BULLET_ENEMY(spawn_x, spawn_y, (dx, dy))
+            enemy_bullets.append(new_enemy_bullet)
 
 w_enemy_raw = image_load("obj/enemy/vertical_img/")
 W_RESOURCES = [p.transform.scale(img, (64, 64)) for img in w_enemy_raw]
