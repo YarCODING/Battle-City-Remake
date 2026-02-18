@@ -29,8 +29,10 @@ class PLAYER(BEHAVIORS):
 
         self.last_shot = 0
         self.shoot_delay = 500
-
-
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            quit()
     def move(self, walls):
         keys = p.key.get_pressed()
         old_x, old_y = self.pos_x, self.pos_y
@@ -102,3 +104,4 @@ class PLAYER(BEHAVIORS):
         p.draw.rect(SCREEN, (255, 255, 255), (20, 20, bar_width, bar_height), 2)
 
 player = PLAYER()
+
