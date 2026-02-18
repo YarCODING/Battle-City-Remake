@@ -62,7 +62,7 @@ while game:
             enemy.move()
             enemy.draw_img()
             enemy.draw_hp()
-            enemy.attack(bullets)
+            enemy.attack(enemy_bullets)
 
         player.move(maps_obj)
         player.draw_img()
@@ -89,7 +89,22 @@ while game:
                     if b in bullets: bullets.remove(b)
                     if enemy.health <= 0: enemies.remove(enemy)
                     break
-        
+        for eb in enemy_bullets[:]:
+            eb.move()
+            eb.draw_img()
+            for wall in maps_obj[:]:
+                if eb.rect.colliderect(wall.rect):
+                    if eb in enemy_bullets: enemy_bullets.remove(eb)
+                    break
+            if eb.rect.right < 0 or eb.rect.left > SCREENSIZE[0] or \
+            eb.rect.bottom < 0 or eb.rect.top > SCREENSIZE[1]:
+                enemy_bullets.remove(eb)
+
+            if eb.rect.colliderect(player.rect):
+                enemy_bullets.remove(eb)
+                player.take_damage(20)
+                
+
 
         p.display.update()
         clock.tick(FPS)
@@ -115,5 +130,9 @@ while game:
 
 
 p.quit()
+
+
+
+
 
 
