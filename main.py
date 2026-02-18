@@ -29,7 +29,6 @@ while game:
         p.display.update()
         
 
-
         for event in p.event.get():
             if event.type == p.QUIT:
                 game = False
@@ -62,9 +61,12 @@ while game:
         for enemy in enemies:
             enemy.move()
             enemy.draw_img()
+            enemy.draw_hp()
+            enemy.attack(bullets)
 
         player.move(maps_obj)
         player.draw_img()
+        player.draw_ui()
 
         for b in bullets[:]:
             b.move()
@@ -73,10 +75,19 @@ while game:
                 bullets.remove(b)
                 logging.debug("Bullet - deleted (screen)")
             
-            for wall in maps_obj:
+            for wall in maps_obj[:]:
                 if b.rect.colliderect(wall.rect):
-                    bullets.remove(b)
-                    logging.debug("Bullet - deleted (wall)")
+                    if not wall.indestructible:
+                        wall.health -= 10
+                        if wall.health <= 0: maps_obj.remove(wall)
+                    if b in bullets: bullets.remove(b)
+                    break
+
+            for enemy in enemies[:]:
+                if b.rect.colliderect(enemy.rect):
+                    enemy.take_damage(20)
+                    if b in bullets: bullets.remove(b)
+                    if enemy.health <= 0: enemies.remove(enemy)
                     break
         
 
@@ -90,15 +101,7 @@ while game:
                 if event.key == p.K_ESCAPE:
                     in_title_screen = True
                 if event.key == p.K_SPACE:
-                    px, py = player.rect.center
-                    rad = math.radians(player.angle - 90)
-                    dx = -math.cos(rad)
-                    dy = math.sin(rad)
-                    offset = max(player.rect.width, player.rect.height) / 2 + 8
-                    spawn_x = px + dx * offset
-                    spawn_y = py + dy * offset
-                    bullets.append(BULLET(spawn_x, spawn_y, (dx, dy)))
-                    logging.debug("Bullet - spawned")
+                    player.attack(bullets)
 
 
         now = p.time.get_ticks()

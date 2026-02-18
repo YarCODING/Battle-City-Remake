@@ -1,4 +1,5 @@
 from module.behaviors import*
+from obj.bullet.script.bullet import*
 
 class PLAYER(BEHAVIORS):
     def __init__(self):
@@ -22,6 +23,13 @@ class PLAYER(BEHAVIORS):
         
         self.speed = 3
         self.angle = 0
+
+        self.max_health = 300
+        self.health = self.max_health
+
+        self.last_shot = 0
+        self.shoot_delay = 500
+
 
     def move(self, walls):
         keys = p.key.get_pressed()
@@ -65,5 +73,32 @@ class PLAYER(BEHAVIORS):
 
         self.image = p.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=(int(self.pos_x), int(self.pos_y)))
+
+    def attack(self, bullets_list):
+        now = p.time.get_ticks()
+        if now - self.last_shot > self.shoot_delay:
+            self.last_shot = now
+            
+            px, py = self.rect.center
+            
+            rad = math.radians(self.angle - 90)
+            dx = -math.cos(rad)
+            dy = math.sin(rad)
+            
+            offset = max(self.rect.width, self.rect.height) / 2 + 10
+            spawn_x = px + dx * offset
+            spawn_y = py + dy * offset
+            
+            new_bullet = BULLET(spawn_x, spawn_y, (dx, dy))
+            bullets_list.append(new_bullet)
+
+    def draw_ui(self):
+        bar_width = 200
+        bar_height = 20
+        hp_fill = (self.health / self.max_health) * bar_width
+        
+        p.draw.rect(SCREEN, (50, 50, 50), (20, 20, bar_width, bar_height))
+        p.draw.rect(SCREEN, (0, 255, 0), (20, 20, hp_fill, bar_height))
+        p.draw.rect(SCREEN, (255, 255, 255), (20, 20, bar_width, bar_height), 2)
 
 player = PLAYER()

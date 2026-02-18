@@ -4,11 +4,15 @@ all_images = image_load(os.path.dirname(__file__))
 WALL_SURFACE = p.transform.scale(all_images[0], (32, 32))
 
 class WALLS(BEHAVIORS):
-    def __init__(self, x, y, index):
+    def __init__(self, x, y, index, indestructible=False):
         self.index = index
         self.size = (32, 32)
         self.color = RED 
         self.rect = p.Rect(x, y, self.size[0], self.size[1])
+
+        self.health = 50
+        self.max_health = 50
+        self.indestructible = indestructible
         
         self.image = WALL_SURFACE
 LEVELES = [
@@ -84,7 +88,8 @@ def create_lvl(index):
 
     for num in LEVELES[index]:
         if num == 1:
-            maps_obj.append(WALLS(current_x, current_y, 0))
+            is_edge = (current_x == 0 or current_x >= 672 or current_y == 0 or current_y >= 480)
+            maps_obj.append(WALLS(current_x, current_y, 0, indestructible=is_edge))
         
         current_x += tile_size
         count += 1
