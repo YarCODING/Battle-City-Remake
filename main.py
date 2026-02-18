@@ -59,6 +59,10 @@ while game:
                 
                 player.rect.center = (player.pos_x, player.pos_y)
 
+        for enemy in enemies:
+            enemy.move()
+            enemy.draw_img()
+
         player.move(maps_obj)
         player.draw_img()
 
