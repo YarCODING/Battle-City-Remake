@@ -104,7 +104,6 @@ while game:
                 player.index = (player.index + 1) % len(player.frames)
                 
                 player.original_image = player.frames[player.index]
-                logging.debug('image changed')
                 player.image = p.transform.rotate(player.original_image, player.angle)
 
 
