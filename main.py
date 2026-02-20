@@ -4,15 +4,29 @@ from module.texts import*
 game = True
 menu_screen = 'start'
 
-maps_obj = create_lvl(0)
 solids_obj = []
-LVL = 1
+lvl = 1
+
+level_started = False
 
 def start_lvl():
+    global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started
+
+    level_started = False
+    
+    solids_obj.clear()
+    enemies.clear()
+    enemy_spawns.clear()
+    bullets.clear()
+    enemy_bullets.clear()
+    maps_obj.clear( )
+    maps_obj = create_lvl(lvl - 1, enemy_spawns)
+    
+    last_spawn_time = p.time.get_ticks()
+
     for wall in maps_obj:
-        if wall.index == 1:
-            wall.draw_img()
-            solids_obj.append(wall)
+        solids_obj.append(wall)
+
 start_lvl()
 
 while game:
@@ -25,8 +39,6 @@ while game:
 
         SCREEN.blit(play_text, (play_button_rect.x + 30, play_button_rect.y + 10))
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
-
-        p.display.update()
         
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -49,8 +61,6 @@ while game:
 
         SCREEN.blit(continue_text, (play_button_rect.x + 30, play_button_rect.y + 10))
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
-
-        p.display.update()
         
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -80,17 +90,21 @@ while game:
                 
                 player.rect.center = (player.pos_x, player.pos_y)
 
+        if enemy_spawns: 
+            level_started = True
         now = p.time.get_ticks()
-        if enemy_spawns and now - last_spawn_time > spawn_delay:
+
+        if enemy_spawns and (now - last_spawn_time > spawn_delay):
             last_spawn_time = now
-            
-            spawn = enemy_spawns.pop(0) 
+            spawn = enemy_spawns.pop(0)
             
             if spawn["type"] == 3:
-                enemies.append(WALK_ENEMY_V(spawn["x"], spawn["y"], W_RESOURCES, speed=2, y2=spawn["y"]+300))
+                new_v = WALK_ENEMY_V(spawn["x"], spawn["y"], W_RESOURCES, 2, spawn["y"] + 200)
+                enemies.append(new_v)
+                
             elif spawn["type"] == 4:
-                new_h_enemy = WALK_ENEMY_H(spawn["x"], spawn["y"], W_RESOURCES, speed=2, x2=spawn["x"] + 232)
-                enemies.append(new_h_enemy)
+                new_h = WALK_ENEMY_H(spawn["x"], spawn["y"], W_RESOURCES, 2, spawn["x"] + 200)
+                enemies.append(new_h)
 
         for enemy in enemies:
             enemy.move()
@@ -152,9 +166,13 @@ while game:
                 explosions.remove(exp)
         for exp in explosions:
             exp.draw(SCREEN)
-                
-        p.display.update()
-        clock.tick(FPS)
+
+        if level_started and len(enemies) == 0 and len(enemy_spawns) == 0:
+            lvl += 1
+            if lvl <= len(LEVELES):
+                start_lvl()
+            else:
+                game = False
 
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -174,6 +192,8 @@ while game:
                 
                 player.original_image = player.frames[player.index]
                 player.image = p.transform.rotate(player.original_image, player.angle)
+    p.display.update()
+    clock.tick(FPS)
 
 
 p.quit()
