@@ -24,14 +24,18 @@ class PLAYER(BEHAVIORS):
         self.speed = 3
         self.angle = 0
 
-        self.max_health = 300
+        self.max_health = 200
         self.health = self.max_health
+        self.lives = 2
 
         self.last_shot = 0
         self.shoot_delay = 500
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
+            self.lives -= 1
+            self.health = self.max_health
+        if self.lives <= 0:
             quit()
     def move(self, walls):
         keys = p.key.get_pressed()
@@ -97,11 +101,17 @@ class PLAYER(BEHAVIORS):
     def draw_ui(self):
         bar_width = 200
         bar_height = 20
+        x, y = 10, 10
         hp_fill = (self.health / self.max_health) * bar_width
         
-        p.draw.rect(SCREEN, (50, 50, 50), (20, 20, bar_width, bar_height))
-        p.draw.rect(SCREEN, (0, 255, 0), (20, 20, hp_fill, bar_height))
-        p.draw.rect(SCREEN, (255, 255, 255), (20, 20, bar_width, bar_height), 2)
+        p.draw.rect(SCREEN, (50, 50, 50), (x, y, bar_width, bar_height))
+        p.draw.rect(SCREEN, (0, 255, 0), (x, y, hp_fill, bar_height))
+        p.draw.rect(SCREEN, (255, 255, 255), (x, y, bar_width, bar_height), 2)
+
+        font = p.font.SysFont("Arial", 24, bold=True)
+        lives_text = font.render(f"{self.lives}", True, (255, 255, 255))
+        
+        SCREEN.blit(lives_text, (x + bar_width + 15, y - 2))
 
 player = PLAYER()
 

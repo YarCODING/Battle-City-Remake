@@ -52,3 +52,6 @@ class ENEMY(ABC, BEHAVIORS):
         pass
 
 enemies = []
+enemy_spawns = []
+last_spawn_time = 0
+spawn_delay = 3000

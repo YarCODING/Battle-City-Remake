@@ -3,6 +3,7 @@ import sys
 from random import*
 import os
 import math
+import random
 
 import logging
 logging.basicConfig(
@@ -33,6 +34,7 @@ p.font.init()
 title_font = p.font.SysFont("Arial", 30)
 play_text = title_font.render("Play Game", True, (255, 255, 255))
 close_text = title_font.render("Close Game", True, (255, 255, 255))
+continue_text = title_font.render("Continue", True, (255, 255, 255))
 
 
 play_button_rect = p.Rect(250, 200, 200, 60)

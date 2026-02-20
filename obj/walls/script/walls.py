@@ -1,4 +1,7 @@
 from module.behaviors import*
+from obj.enemies.walkenemy.script.walkenemy import*
+from obj.player.script.player import*
+from obj.enemy.script.enemy import*
 
 all_images = image_load(os.path.dirname(__file__))
 WALL_SURFACE = p.transform.scale(all_images[0], (32, 32))
@@ -18,19 +21,19 @@ class WALLS(BEHAVIORS):
 LEVELES = [
 [
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,
+    1,0,0,2,0,0,0,0,1,0,0,0,3,0,0,0,0,0,0,0,0,1,
     1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,1,1,0,0,1,
+    1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,
+    1,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,
     1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,
+    1,0,0,0,0,0,0,0,0,0,1,0,4,0,0,0,0,0,0,0,0,1,
     1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 ],
@@ -73,11 +76,14 @@ LEVELES = [
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 '''
 ##############
+
 maps_obj = []
+last_spawn_time = p.time.get_ticks()
 
 def create_lvl(index):
-    global maps_obj
+    global maps_obj, enemies, player, enemy_spawns, W_RESOURCES
     maps_obj = []
+    enemies = []
     
     tile_size = 32
     current_x = 0
@@ -87,9 +93,17 @@ def create_lvl(index):
     count = 0
 
     for num in LEVELES[index]:
+
+
         if num == 1:
             is_edge = (current_x == 0 or current_x >= 672 or current_y == 0 or current_y >= 480)
             maps_obj.append(WALLS(current_x, current_y, 0, indestructible=is_edge))
+        elif num == 2:
+            player.pos_x = float(current_x + tile_size // 2)
+            player.pos_y = float(current_y + tile_size // 2)
+        elif num >= 3:
+            enemy_spawns.append({"type": num, "x": current_x + 16, "y": current_y + 16})
+
         
         current_x += tile_size
         count += 1
@@ -98,5 +112,5 @@ def create_lvl(index):
             current_x = 0
             current_y += tile_size
             count = 0
-            
+    random.shuffle(enemy_spawns)
     return maps_obj
