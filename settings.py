@@ -28,6 +28,8 @@ FPS = 60
 background = p.image.load("img/bg.jpeg")
 background = p.transform.scale(background, SCREENSIZE)
 
+medal = p.transform.scale(p.image.load("img/gold.png"), (90, 150))
+
 p.font.init()
 
 

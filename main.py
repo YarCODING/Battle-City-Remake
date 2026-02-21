@@ -32,7 +32,7 @@ start_lvl()
 while game:
     if menu_screen == 'start':
         SCREEN.blit(background, (0, 0))
-        SCREEN.blit(title_font.render("Battle_City_Remake", True, (0, 0, 0)), (240, 130))
+        SCREEN.blit(title_font.render("Battle City Remake", True, (0, 0, 0)), (240, 130))
 
         p.draw.rect(SCREEN, (0, 255, 0), play_button_rect)
         p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
@@ -70,6 +70,23 @@ while game:
                 if play_button_rect.collidepoint(event.pos):
                     menu_screen = None
 
+                if close_button_rect.collidepoint(event.pos):
+                    game = False
+    
+    elif menu_screen == 'win':
+        SCREEN.blit(background, (0, 0))
+        SCREEN.blit(medal, (SCREENSIZE[0]/2-40, SCREENSIZE[1]/2-120))
+        SCREEN.blit(title_font.render("You won!!", True, (255, 255, 0)), (300, 70))
+
+        p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
+
+        SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+        
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                game = False
+
+            if event.type == p.MOUSEBUTTONDOWN:
                 if close_button_rect.collidepoint(event.pos):
                     game = False
 
@@ -172,7 +189,7 @@ while game:
             if lvl <= len(LEVELES):
                 start_lvl()
             else:
-                game = False
+                menu_screen = 'win'
 
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -197,9 +214,3 @@ while game:
 
 
 p.quit()
-
-
-
-
-
-
