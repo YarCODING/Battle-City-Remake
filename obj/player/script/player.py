@@ -27,6 +27,9 @@ class PLAYER(BEHAVIORS):
         self.max_health = 200
         self.health = self.max_health
         self.lives = 2
+        self.last_regen = p.time.get_ticks()
+        self.regen_speed = 3000
+        self.regen_amount = 5
 
         self.damage = 20
 
@@ -42,7 +45,16 @@ class PLAYER(BEHAVIORS):
         self.speed = 3
         self.shoot_delay = 500
         self.lives = 2
+        self.regen_speed = 3000
+        self.regen_amount = 5
         self.god_mode = False
+
+    def regenerate(self):
+        now = p.time.get_ticks()
+        if now - self.last_regen > self.regen_speed:
+            self.last_regen = now
+            if self.health < self.max_health:
+                self.health = min(self.health + self.regen_amount, self.max_health)
 
     def take_damage(self, amount):
         self.health -= amount

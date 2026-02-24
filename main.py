@@ -31,6 +31,9 @@ start_lvl()
 while game:
     if menu_screen == 'start':
         SCREEN.blit(background, (0, 0))
+        for tank in menu_tanks:
+            tank.update()
+            tank.draw()
         SCREEN.blit(title_font.render("Battle City Remake", True, (0, 0, 0)), (240, 130))
 
         p.draw.rect(SCREEN, (0, 255, 0), play_button_rect)
@@ -53,6 +56,9 @@ while game:
 
     elif menu_screen == 'pause':
         SCREEN.blit(background, (0, 0))
+        for tank in menu_tanks:
+            tank.update()
+            tank.draw()
         SCREEN.blit(title_font.render("Pause", True, (0, 0, 0)), (320, 130))
 
         p.draw.rect(SCREEN, (0, 255, 0), play_button_rect)
@@ -74,6 +80,9 @@ while game:
     
     elif menu_screen == 'win':
         SCREEN.blit(background, (0, 0))
+        for tank in menu_tanks:
+            tank.update()
+            tank.draw()
         SCREEN.blit(medal, (SCREENSIZE[0]/2-40, SCREENSIZE[1]/2-120))
         SCREEN.blit(title_font.render("You won!!", True, (255, 255, 0)), (300, 70))
 
@@ -120,16 +129,6 @@ while game:
             if wall.index != 1:
                 wall.draw_img()
 
-        if player.rect.right < 0 or player.rect.left > SCREENSIZE[0] or \
-            player.rect.bottom < 0 or player.rect.top > SCREENSIZE[1]:
-                
-                player.pos_x = 64.0
-                player.pos_y = 64.0
-                player.angle = 0
-                logging.debug("Player respawned")
-                
-                player.rect.center = (player.pos_x, player.pos_y)
-
         if enemy_spawns: 
             level_started = True
         now = p.time.get_ticks()
@@ -162,6 +161,7 @@ while game:
             
 
         player.move(maps_obj)
+        player.regenerate()
         player.draw_img()
         player.draw_ui()
 
@@ -254,6 +254,8 @@ while game:
                             player.speed = 5
                             player.shoot_delay = 10
                             player.lives = 999999
+                            player.regen_speed = 10
+                            player.regen_amount = 1000000
                             logging.info("God Mode: ON")
                         else:
                             player.reset_stats()
