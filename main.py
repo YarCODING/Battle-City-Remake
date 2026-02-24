@@ -18,7 +18,8 @@ def start_lvl():
     enemy_spawns.clear()
     bullets.clear()
     enemy_bullets.clear()
-    maps_obj.clear( )
+    maps_obj.clear()
+    bonuses.clear()
     maps_obj = create_lvl(lvl - 1, enemy_spawns)
     
     last_spawn_time = p.time.get_ticks()
@@ -158,6 +159,25 @@ while game:
                 enemy.attack(enemy_bullets)
             enemy.draw_img()
             enemy.draw_hp()
+
+        for b in bonuses[:]:
+            b.draw_img()
+            
+            if p.time.get_ticks() - b.spawn_time > b.lifetime:
+                bonuses.remove(b)
+                continue
+
+            if player.rect.colliderect(b.rect):
+                if b.type == 'hp':
+                    player.health = player.max_health
+                elif b.type == 'lives':
+                    player.lives += 1
+                elif b.type == 'speed':
+                    player.speed += 1
+                elif b.type == 'star':
+                    player.shoot_delay = max(100, player.shoot_delay - 100)
+                
+                bonuses.remove(b)
             
 
         player.move(maps_obj)
@@ -187,10 +207,14 @@ while game:
                     if b in bullets:
                         explosions.append(EXPLOSION(enemy.pos_x, enemy.pos_y, EXPLOSION_FRAMES))
                         bullets.remove(b)
-                    if enemy.health <= 0: 
+                    if enemy.health <= 0:
                         explosions.append(EXPLOSION(enemy.pos_x, enemy.pos_y, EXPLOSION_FRAMES))
+                        
+                        if random.random() < 0.3:
+                            bonuses.append(BONUS(enemy.pos_x, enemy.pos_y))
+                            
                         enemies.remove(enemy)
-                    break
+                        break
         for eb in enemy_bullets[:]:
             eb.move()
             eb.draw_img()
