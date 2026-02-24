@@ -5,3 +5,4 @@ from obj.enemy.script.enemy import*
 from obj.explosion.script.explosion import*
 
 from obj.enemies.walkenemy.script.walkenemy import*
+from obj.enemies.smartenemy.script.smartenemy import*

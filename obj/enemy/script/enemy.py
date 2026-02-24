@@ -21,7 +21,7 @@ class ENEMY(ABC, BEHAVIORS):
         self.moving = False
         self.last_change = p.time.get_ticks()
 
-        self.max_health = 100
+        self.max_health = health
         self.health = self.max_health
         self.health_timer = 0
 

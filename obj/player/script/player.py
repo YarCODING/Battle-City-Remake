@@ -28,15 +28,31 @@ class PLAYER(BEHAVIORS):
         self.health = self.max_health
         self.lives = 2
 
+        self.damage = 20
+
         self.last_shot = 0
         self.shoot_delay = 500
+
+        self.god_mode = False
+
+    def reset_stats(self):
+        self.max_health = 200
+        self.health = min(self.health, self.max_health)
+        self.damage = 20
+        self.speed = 3
+        self.shoot_delay = 500
+        self.lives = 2
+        self.god_mode = False
+
     def take_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
             self.lives -= 1
             self.health = self.max_health
         if self.lives <= 0:
-            quit()
+            return True
+        return False
+
     def move(self, walls):
         keys = p.key.get_pressed()
         old_x, old_y = self.pos_x, self.pos_y
@@ -104,12 +120,15 @@ class PLAYER(BEHAVIORS):
         x, y = 10, 10
         hp_fill = (self.health / self.max_health) * bar_width
         
+        color = (255, 215, 0) if self.god_mode else (0, 255, 0)
+        
         p.draw.rect(SCREEN, (50, 50, 50), (x, y, bar_width, bar_height))
-        p.draw.rect(SCREEN, (0, 255, 0), (x, y, hp_fill, bar_height))
+        p.draw.rect(SCREEN, color, (x, y, hp_fill, bar_height))
         p.draw.rect(SCREEN, (255, 255, 255), (x, y, bar_width, bar_height), 2)
 
         font = p.font.SysFont("Arial", 24, bold=True)
-        lives_text = font.render(f"{self.lives}", True, (255, 255, 255))
+        text = "GOD" if self.god_mode else f"{self.lives}"
+        lives_text = font.render(text, True, (255, 255, 255))
         
         SCREEN.blit(lives_text, (x + bar_width + 15, y - 2))
 

@@ -17,9 +17,6 @@ class WALK_ENEMY_V(ENEMY):
         self.last_shot = 0
         self.shoot_delay = 2000
 
-        self.max_health = 100
-        self.health = self.max_health
-
     def move(self):
         if self.pos_y >= self.y2:
             self.direction = 'up'

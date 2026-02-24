@@ -17,6 +17,8 @@ SCREENSIZE = (704, 512)
 SCREEN = p.display.set_mode(SCREENSIZE)
 p.display.set_caption("Battle_City_Remake")
 
+menu_screen = 'start'
+
 clock = p.time.Clock()
 FPS = 60
 

@@ -2,7 +2,6 @@ from imports import*
 from module.texts import*
 
 game = True
-menu_screen = 'start'
 
 solids_obj = []
 lvl = 1
@@ -89,6 +88,30 @@ while game:
             if event.type == p.MOUSEBUTTONDOWN:
                 if close_button_rect.collidepoint(event.pos):
                     game = False
+    
+    elif menu_screen == 'game_over':
+        SCREEN.fill((0, 0, 0))
+        title_font = p.font.SysFont("Arial", 50)
+        SCREEN.blit(title_font.render("GAME OVER", True, (255, 0, 0)), (230, 120))
+        
+        p.draw.rect(SCREEN, (0, 255, 0), play_button_rect)
+        SCREEN.blit(title_font.render("Restart", True, (255, 255, 255)), (play_button_rect.x + 20, play_button_rect.y + 5))
+
+        p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
+        SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                game = False
+            if event.type == p.MOUSEBUTTONDOWN:
+                if play_button_rect.collidepoint(event.pos):
+                    lvl = 1
+                    player.reset_stats()
+                    start_lvl()
+                    menu_screen = None
+
+                if close_button_rect.collidepoint(event.pos):
+                    game = False
 
     else:
         SCREEN.blit(background, (0, 0))
@@ -123,11 +146,20 @@ while game:
                 new_h = WALK_ENEMY_H(spawn["x"], spawn["y"], W_RESOURCES, 2, spawn["x"] + 200)
                 enemies.append(new_h)
 
+            elif spawn["type"] == 5:
+                new_s = SMART_ENEMY(spawn["x"], spawn["y"], S_RESOURCES, 1)
+                enemies.append(new_s)
+
         for enemy in enemies:
-            enemy.move()
+            if isinstance(enemy, SMART_ENEMY):
+                enemy.move((player.pos_x, player.pos_y), maps_obj)
+                enemy.attack(enemy_bullets, player.rect, maps_obj)
+            else:
+                enemy.move()
+                enemy.attack(enemy_bullets)
             enemy.draw_img()
             enemy.draw_hp()
-            enemy.attack(enemy_bullets)
+            
 
         player.move(maps_obj)
         player.draw_img()
@@ -143,7 +175,7 @@ while game:
             for wall in maps_obj[:]:
                 if b.rect.colliderect(wall.rect):
                     if not wall.indestructible:
-                        wall.health -= 10
+                        wall.health -= player.damage
                         if wall.health <= 0: maps_obj.remove(wall)
                     explosions.append(EXPLOSION(b.x, b.y, EXPLOSION_FRAMES))
                     if b in bullets: bullets.remove(b)
@@ -151,7 +183,7 @@ while game:
 
             for enemy in enemies[:]:
                 if b.rect.colliderect(enemy.rect):
-                    enemy.take_damage(20)
+                    enemy.take_damage(player.damage)
                     if b in bullets:
                         explosions.append(EXPLOSION(enemy.pos_x, enemy.pos_y, EXPLOSION_FRAMES))
                         bullets.remove(b)
@@ -172,10 +204,21 @@ while game:
             eb.rect.bottom < 0 or eb.rect.top > SCREENSIZE[1]:
                 enemy_bullets.remove(eb)
 
-            if eb.rect.colliderect(player.rect):
+            if eb and eb.rect.colliderect(player.rect):
                 explosions.append(EXPLOSION(player.pos_x, player.pos_y, EXPLOSION_FRAMES))
                 enemy_bullets.remove(eb)
-                player.take_damage(20)
+                is_dead = player.take_damage(20)
+                if is_dead:
+                    menu_screen = 'game_over'
+            
+            for wall in maps_obj[:]:
+                if eb.rect.colliderect(wall.rect):
+                    if not wall.indestructible:
+                        wall.health -= 20
+                        if wall.health <= 0: maps_obj.remove(wall)
+                    explosions.append(EXPLOSION(eb.x, eb.y, EXPLOSION_FRAMES))
+                    if eb in bullets: bullets.remove(b)
+                    break
         
         for exp in explosions[:]:
             exp.update()
@@ -195,10 +238,26 @@ while game:
             if event.type == p.QUIT:
                 game = False
             if event.type == p.KEYDOWN:
+                keys = p.key.get_pressed()
                 if event.key == p.K_ESCAPE:
                     menu_screen = 'pause'
                 if event.key == p.K_SPACE:
                     player.attack(bullets)
+                if keys[p.K_LCTRL] and keys[p.K_LSHIFT] and event.key == p.K_g:
+                    if keys[p.K_LCTRL] and keys[p.K_LSHIFT] and event.key == p.K_g:
+                        player.god_mode = not player.god_mode
+                        
+                        if player.god_mode:
+                            player.health = 1000000
+                            player.max_health = 1000000
+                            player.damage = 1000000
+                            player.speed = 5
+                            player.shoot_delay = 10
+                            player.lives = 999999
+                            logging.info("God Mode: ON")
+                        else:
+                            player.reset_stats()
+                            logging.info("God Mode: OFF")
 
 
         now = p.time.get_ticks()
