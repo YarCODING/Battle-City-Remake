@@ -7,6 +7,8 @@ solids_obj = []
 lvl = 1
 
 level_started = False
+level_clear_time = 0
+waiting_for_next_lvl = False
 
 def start_lvl():
     global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started
@@ -251,12 +253,24 @@ while game:
         for exp in explosions:
             exp.draw(SCREEN)
 
-        if level_started and len(enemies) == 0 and len(enemy_spawns) == 0:
-            lvl += 1
-            if lvl <= len(LEVELES):
-                start_lvl()
-            else:
-                menu_screen = 'win'
+        if level_started and len(enemies) == 0 and len(enemy_spawns) == 0 and not waiting_for_next_lvl:
+            waiting_for_next_lvl = True
+            level_clear_time = p.time.get_ticks()
+        
+        if waiting_for_next_lvl:
+            font = p.font.SysFont("Arial", 40, bold=True)
+            msg1 = font.render(f"LEVEL COMPLETE!", True, (255, 255, 0))
+            msg2 = font.render(f"NEXT IN: {3 - (p.time.get_ticks() - level_clear_time)//1000}", True, (255, 255, 0))
+            SCREEN.blit(msg1, (SCREENSIZE[0]//2 - 180, SCREENSIZE[1]//2 - 50))
+            SCREEN.blit(msg2, (SCREENSIZE[0]//2 - 100, SCREENSIZE[1]//2 - 10))
+
+            if p.time.get_ticks() - level_clear_time > 3000:
+                lvl += 1
+                if lvl <= len(LEVELES):
+                    start_lvl()
+                    waiting_for_next_lvl = False
+                else:
+                    menu_screen = 'win'
 
         for event in p.event.get():
             if event.type == p.QUIT:
