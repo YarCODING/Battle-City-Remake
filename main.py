@@ -11,7 +11,7 @@ level_clear_time = 0
 waiting_for_next_lvl = False
 
 def start_lvl():
-    global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started
+    global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started, explosions
 
     level_started = False
     
@@ -22,7 +22,9 @@ def start_lvl():
     enemy_bullets.clear()
     maps_obj.clear()
     bonuses.clear()
+    explosions.clear()
     maps_obj = create_lvl(lvl - 1, enemy_spawns)
+
     
     last_spawn_time = p.time.get_ticks()
 
@@ -221,7 +223,7 @@ while game:
             eb.move()
             eb.draw_img()
             for wall in maps_obj[:]:
-                if eb.rect.colliderect(wall.rect):
+                if eb and eb.rect.colliderect(wall.rect):
                     if eb in enemy_bullets:
                         explosions.append(EXPLOSION(eb.x, eb.y, EXPLOSION_FRAMES))
                         enemy_bullets.remove(eb)
