@@ -212,7 +212,7 @@ while game:
                     if enemy.health <= 0:
                         explosions.append(EXPLOSION(enemy.pos_x, enemy.pos_y, EXPLOSION_FRAMES))
                         
-                        if random.random() < 0.3:
+                        if random.randint(1, 100) < 30:
                             bonuses.append(BONUS(enemy.pos_x, enemy.pos_y))
                             
                         enemies.remove(enemy)
