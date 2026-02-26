@@ -115,6 +115,7 @@ class SMART_ENEMY(ENEMY):
                 dy = -math.sin(rad)
                 new_bullet = BULLET_ENEMY(self.pos_x, self.pos_y, (dx, dy))
                 enemy_bullets.append(new_bullet)
+                shoot_sound.play()
 
 
 s_enemy_raw = image_load("obj/enemies/smartenemy/img/")

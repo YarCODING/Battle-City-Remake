@@ -3,6 +3,8 @@ from module.behaviors import*
 exp_raw = image_load(os.path.dirname(__file__))
 EXPLOSION_FRAMES = [p.transform.scale(img, (64, 64)) for img in exp_raw]
 
+explosion_sound = get_sound('explosion', 'explosion.mp3')
+
 class EXPLOSION(BEHAVIORS):
     def __init__(self, x, y, frames):
         super().__init__()
@@ -14,6 +16,8 @@ class EXPLOSION(BEHAVIORS):
         self.last_update = p.time.get_ticks()
         self.frame_rate = 60
         self.alive = True
+
+        explosion_sound.play()
 
     def update(self):
         now = p.time.get_ticks()

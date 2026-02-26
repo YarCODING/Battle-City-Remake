@@ -58,6 +58,7 @@ class WALK_ENEMY_V(ENEMY):
             
             new_enemy_bullet = BULLET_ENEMY(spawn_x, spawn_y, (dx, dy))
             enemy_bullets.append(new_enemy_bullet)
+            shoot_sound.play()
 
 class WALK_ENEMY_H(ENEMY):
     def __init__(self, x, y, frames, speed, x2):
@@ -114,6 +115,7 @@ class WALK_ENEMY_H(ENEMY):
             
             new_enemy_bullet = BULLET_ENEMY(spawn_x, spawn_y, (dx, dy))
             enemy_bullets.append(new_enemy_bullet)
+            shoot_sound.play()
             
 class MenuTank:
     def __init__(self):

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from module.behaviors import*
 
+shoot_sound = get_sound("bullet", "shot.mp3")
+
 class ENEMY(ABC, BEHAVIORS):
     def __init__(self, x, y, frames, speed, health):
         self.frames = frames

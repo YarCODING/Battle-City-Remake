@@ -22,10 +22,34 @@ menu_screen = 'start'
 clock = p.time.Clock()
 FPS = 60
 
-# p.mixer.init()
-# p.mixer.music.load('music/music1.mp3')
-# p.mixer.music.set_volume(1)
-# p.mixer.music.play(-1)
+p.mixer.init()
+menu_music_path = "music/menu_music.mp3"
+playlist = ["music/music1.mp3", "music/music2.mp3"]
+
+MUSIC_ENDED = p.USEREVENT + 1
+p.mixer.music.set_endevent(MUSIC_ENDED)
+
+current_music_type = None
+
+def play_menu_music():
+    global current_music_type
+    if current_music_type != 'menu':
+        current_music_type = 'menu'
+        p.mixer.music.load(menu_music_path)
+        p.mixer.music.play(-1)
+
+def play_game_music():
+    global current_music_type
+    current_music_type = 'game'
+    track = random.choice(playlist)
+    p.mixer.music.load(track)
+    p.mixer.music.play()
+
+
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
+def get_sound(obj, name):
+    return p.mixer.Sound(os.path.join(BASE_PATH, "obj", obj, "sound", name))
 
 background = p.image.load("img/bg.jpeg")
 background = p.transform.scale(background, SCREENSIZE)

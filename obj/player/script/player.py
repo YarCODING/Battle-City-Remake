@@ -1,6 +1,8 @@
 from module.behaviors import*
 from obj.bullet.script.bullet import*
 
+shoot_sound = get_sound("bullet", "shot.mp3")
+
 class PLAYER(BEHAVIORS):
     def __init__(self):
         self.size = (64, 64)
@@ -125,6 +127,7 @@ class PLAYER(BEHAVIORS):
             
             new_bullet = BULLET(spawn_x, spawn_y, (dx, dy))
             bullets_list.append(new_bullet)
+            shoot_sound.play()
 
     def draw_ui(self):
         bar_width = 200

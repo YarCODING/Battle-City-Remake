@@ -10,6 +10,8 @@ level_started = False
 level_clear_time = 0
 waiting_for_next_lvl = False
 
+bonus_sound = get_sound('bonus', 'bonus.mp3')
+
 def start_lvl():
     global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started, explosions
 
@@ -46,6 +48,8 @@ while game:
 
         SCREEN.blit(play_text, (play_button_rect.x + 30, play_button_rect.y + 10))
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+
+        play_menu_music()
         
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -54,7 +58,7 @@ while game:
             if event.type == p.MOUSEBUTTONDOWN:
                 if play_button_rect.collidepoint(event.pos):
                     menu_screen = None
-                    # p.mixer.music.play(-1)
+                    play_game_music()
 
                 if close_button_rect.collidepoint(event.pos):
                     game = False
@@ -71,6 +75,8 @@ while game:
 
         SCREEN.blit(continue_text, (play_button_rect.x + 30, play_button_rect.y + 10))
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+
+        play_menu_music()
         
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -94,6 +100,8 @@ while game:
         p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
 
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+
+        play_menu_music()
         
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -113,6 +121,8 @@ while game:
 
         p.draw.rect(SCREEN, (255, 0, 0), close_button_rect)
         SCREEN.blit(close_text, (close_button_rect.x + 30, close_button_rect.y + 10))
+
+        play_menu_music()
 
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -180,7 +190,7 @@ while game:
                     player.speed += 1
                 elif b.type == 'star':
                     player.shoot_delay = max(100, player.shoot_delay - 100)
-                
+                bonus_sound.play()
                 bonuses.remove(b)
             
 
@@ -238,6 +248,9 @@ while game:
                 is_dead = player.take_damage(20)
                 if is_dead:
                     menu_screen = 'game_over'
+                    current_music_type = None
+                    print('you are dead, so music is NONE')
+                    p.mixer.music.stop()
             
             for wall in maps_obj[:]:
                 if eb.rect.colliderect(wall.rect):
@@ -277,6 +290,9 @@ while game:
         for event in p.event.get():
             if event.type == p.QUIT:
                 game = False
+            if event.type == MUSIC_ENDED:
+                if menu_screen is None:
+                    play_game_music()
             if event.type == p.KEYDOWN:
                 keys = p.key.get_pressed()
                 if event.key == p.K_ESCAPE:
