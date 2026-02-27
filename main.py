@@ -11,6 +11,9 @@ level_clear_time = 0
 waiting_for_next_lvl = False
 
 bonus_sound = get_sound('bonus', 'bonus.mp3')
+over_sound = p.mixer.Sound("music/game-over.mp3")
+win_sound = p.mixer.Sound("music/win.mp3")
+start_sound = p.mixer.Sound("music/game-start.mp3")
 
 def start_lvl():
     global maps_obj, solids_obj, enemies, enemy_spawns, bullets, enemy_bullets, lvl, last_spawn_time, level_started, explosions
@@ -27,11 +30,11 @@ def start_lvl():
     explosions.clear()
     maps_obj = create_lvl(lvl - 1, enemy_spawns)
 
-    
     last_spawn_time = p.time.get_ticks()
 
     for wall in maps_obj:
         solids_obj.append(wall)
+    start_sound.play()
 
 start_lvl()
 
@@ -244,12 +247,15 @@ while game:
 
             if eb and eb.rect.colliderect(player.rect):
                 explosions.append(EXPLOSION(player.pos_x, player.pos_y, EXPLOSION_FRAMES))
-                enemy_bullets.remove(eb)
+                try:
+                    enemy_bullets.remove(eb)
+                except Exception:
+                    break
                 is_dead = player.take_damage(20)
                 if is_dead:
                     menu_screen = 'game_over'
+                    over_sound.play()
                     current_music_type = None
-                    print('you are dead, so music is NONE')
                     p.mixer.music.stop()
             
             for wall in maps_obj[:]:
@@ -285,6 +291,7 @@ while game:
                     start_lvl()
                     waiting_for_next_lvl = False
                 else:
+                    win_sound.play()
                     menu_screen = 'win'
 
         for event in p.event.get():
